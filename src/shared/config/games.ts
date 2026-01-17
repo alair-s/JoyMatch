@@ -16,6 +16,7 @@ export const SHEEP_GAME_CONFIG: GameConfig = {
     name: '羊了个羊',
     description: '经典三消挑战',
     icon: '🐑',
+    mode: 'sheep',
     matchCount: 3,
     queueSize: 7,
     gridSize: 8,
@@ -29,8 +30,9 @@ export const BBQ_GAME_CONFIG: GameConfig = {
     name: '烧烤摊',
     description: '配对烧烤食材',
     icon: '🍢',
+    mode: 'bbq',
     matchCount: 2,
-    queueSize: 5,
+    queueSize: 5, // bbq 模式不使用队列，但保留以兼容接口
     gridSize: 6,
     maxLevel: 30,
     path: '/game/bbq',
@@ -42,6 +44,7 @@ export const PUZZLE_GAME_CONFIG: GameConfig = {
     name: '拼图大师',
     description: '考验你的眼力',
     icon: '🧩',
+    mode: 'sheep',
     matchCount: 2,
     queueSize: 6,
     gridSize: 6,
@@ -52,7 +55,7 @@ export const PUZZLE_GAME_CONFIG: GameConfig = {
 /** 所有游戏配置列表 */
 export const GAME_CONFIGS: GameRegistration[] = [
     { config: SHEEP_GAME_CONFIG, comingSoon: false },
-    { config: BBQ_GAME_CONFIG, comingSoon: true },
+    { config: BBQ_GAME_CONFIG, comingSoon: false },
     { config: PUZZLE_GAME_CONFIG, comingSoon: true },
 ];
 
