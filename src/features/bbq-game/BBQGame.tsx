@@ -1,19 +1,19 @@
 /**
  * 烧烤摊 - 游戏主页面
- * 使用数据路由 lazy 加载
  * 
- * 与羊了个羊的区别：
- * - matchCount = 2（两个相同即可消除）
- * - queueSize = 5（队列更小）
+ * 游戏规则：
+ * - 9个烧烤炉（3x3布局）
+ * - 每个烧烤炉有6个卡片位置：上面3个可操作，下面3个是预览
+ * - 点击卡片选中，再点击空位移动
+ * - 操作区3张相同时自动消除，预览区卡片移上来
  */
 
 import React from 'react';
 import { useNavigate, useLoaderData } from 'react-router-dom';
-import { useGameState } from '../../core/hooks/useGameState';
+import { useBBQGameState } from '../../core/hooks/useBBQGameState';
 import { BBQ_GAME_CONFIG } from '../../shared/config/games';
 import { getDefaultBBQTheme } from './themes';
-import { GameBoard } from '../sheep-game/components/GameBoard';
-import { GameControls } from '../sheep-game/components/GameControls';
+import { BBQGameBoard } from './components/BBQGameBoard';
 import { GameInfo } from '../sheep-game/components/GameInfo';
 import { GameResult } from '../sheep-game/components/GameResult';
 import type { GameLoaderData } from '../../app/router';
@@ -24,22 +24,22 @@ function BBQGame() {
     const loaderData = useLoaderData() as GameLoaderData | undefined;
 
     const {
-        scene,
-        queuePositions,
+        grills,
+        selectedCard,
+        cardPoolCount,
         level,
         score,
         status,
         usedTime,
         remainingCount,
         maxLevel,
-        clickItem,
-        pop,
-        undo,
+        clickActiveSlot,
+        dragMove,
         shuffle,
         nextLevel,
         restart,
         sound,
-    } = useGameState({
+    } = useBBQGameState({
         config: loaderData?.config || BBQ_GAME_CONFIG,
         theme,
         initialLevel: loaderData?.savedProgress?.level,
@@ -54,8 +54,8 @@ function BBQGame() {
             className="min-h-screen flex flex-col"
             style={{ backgroundColor: theme.backgroundColor || '#2d1810' }}
         >
-            {/* 烧烤摊特色：顶部烟雾效果 */}
-            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-orange-900/30 to-transparent pointer-events-none" />
+            {/* 顶部烟雾效果 */}
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-orange-900/20 to-transparent pointer-events-none" />
 
             {/* 顶部区域 */}
             <div className="relative flex items-center justify-between p-4">
@@ -83,37 +83,38 @@ function BBQGame() {
                     remainingCount={remainingCount}
                     usedTime={usedTime}
                 />
-            </div>
-
-            {/* 游戏提示 */}
-            <div className="text-center text-amber-400/60 text-sm mb-2">
-                💡 两个相同食材即可配对
-            </div>
-
-            {/* 游戏面板 */}
-            <div className="flex-1 flex items-center justify-center px-4 py-2">
-                <GameBoard
-                    scene={scene}
-                    queuePositions={queuePositions}
-                    onClickItem={clickItem}
-                />
-            </div>
-
-            {/* 烤架区域（队列） */}
-            <div className="h-16 bg-gradient-to-r from-orange-950 via-red-900 to-orange-950 mx-4 mb-4 rounded-xl border-2 border-orange-800/50 shadow-inner">
-                <div className="w-full h-full flex items-center justify-center text-orange-700/50 text-sm">
-                    🔥 烤架 🔥
+                {/* 卡片池显示 */}
+                <div className="text-center text-amber-400/70 text-xs mt-1">
+                    📦 卡片池: {cardPoolCount} 张
                 </div>
             </div>
 
-            {/* 控制按钮 */}
-            <div className="pb-8">
-                <GameControls
-                    onPop={pop}
-                    onUndo={undo}
-                    onShuffle={shuffle}
-                    onNextLevel={nextLevel}
+            {/* 游戏面板 */}
+            <div className="flex-1 flex items-center justify-center px-2 py-2">
+                <BBQGameBoard
+                    grills={grills}
+                    selectedCard={selectedCard}
+                    onClickActiveSlot={clickActiveSlot}
+                    onDragMove={dragMove}
                 />
+            </div>
+
+            {/* 控制按钮 */}
+            <div className="pb-6 flex justify-center gap-4">
+                <button
+                    onClick={shuffle}
+                    disabled={score < 10}
+                    className="px-5 py-2.5 bg-orange-700 hover:bg-orange-600 disabled:bg-gray-700 disabled:cursor-not-allowed text-amber-100 rounded-xl font-medium transition-colors shadow-lg text-sm"
+                >
+                    🔀 洗牌 (-10)
+                </button>
+                <button
+                    onClick={nextLevel}
+                    disabled={level >= maxLevel}
+                    className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors shadow-lg text-sm"
+                >
+                    ⏭️ 跳关
+                </button>
             </div>
 
             {/* 游戏结果弹窗 */}
@@ -132,7 +133,6 @@ function BBQGame() {
     );
 }
 
-// 默认导出 + Component 导出（支持 lazy 加载）
 export default BBQGame;
 export const Component = BBQGame;
 export { BBQGame };
