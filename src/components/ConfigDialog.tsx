@@ -18,7 +18,6 @@ import {
 } from '../utils';
 import { copy } from 'clipboard';
 import { CloseIcon } from './CloseIcon';
-import WxQrCode from './WxQrCode';
 
 const InputContainer: FC<{
     label: string;
@@ -716,7 +715,7 @@ const ConfigDialog: FC<{
                     🎉🎉🎉恭喜发现彩蛋，生成的主题将开启纯净模式～
                 </div>
             )}
-            <WxQrCode onClick={() => setPureClickTime(pureClickTime + 1)} />
+
             <div className={'flex-container'}>
                 <button
                     className={'primary flex-grow'}

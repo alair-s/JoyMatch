@@ -15,7 +15,7 @@ import { PersonalInfo } from './components/PersonalInfo';
 import { Info } from './components/Info';
 const ThemeChanger = React.lazy(() => import('./components/ThemeChanger'));
 const ConfigDialog = React.lazy(() => import('./components/ConfigDialog'));
-const WxQrCode = React.lazy(() => import('./components/WxQrCode'));
+
 
 const App: FC<{ theme: Theme<any> }> = ({ theme: initTheme }) => {
     console.log('initTheme', initTheme);
@@ -88,7 +88,7 @@ const App: FC<{ theme: Theme<any> }> = ({ theme: initTheme }) => {
             <PersonalInfo />
             <div className={'flex-spacer'} style={{ minHeight: 52 }} />
             <Suspense fallback={<span>Loading</span>}>
-                {!__DIY__ && !theme.pure && <WxQrCode />}
+   
             </Suspense>
             {!__DIY__ && (
                 <p
