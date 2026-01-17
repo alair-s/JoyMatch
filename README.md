@@ -31,9 +31,10 @@ src/
 │   │   ├── types.ts       # 类型定义
 │   │   └── MatchEngine.ts # 消除算法
 │   └── hooks/
-│       ├── useGameState.ts # 游戏状态管理
-│       ├── useTimer.ts     # 计时器
-│       └── useSound.tsx    # 音效管理
+│       ├── useGameState.ts    # 羊了个羊状态管理
+│       ├── useBBQGameState.ts # 烧烤摊状态管理
+│       ├── useTimer.ts        # 计时器
+│       └── useSound.tsx       # 音效管理
 │
 ├── features/               # 功能模块（按游戏划分）
 │   ├── home/              # 首页（游戏选择）
@@ -50,8 +51,26 @@ src/
 | 游戏 | 消除规则 | 状态 |
 |-----|---------|------|
 | 🐑 羊了个羊 | 3 个相同消除 | ✅ 已上线 |
-| 🍢 烧烤摊 | 2 个相同消除 | 🚧 开发中 |
+| 🍢 烧烤摊 | 3 个相同消除 | ✅ 已上线 |
 | 🧩 拼图大师 | 2 个相同消除 | 📋 规划中 |
+
+### 🐑 羊了个羊
+
+经典消除玩法：
+- 点击场景中的卡片，卡片进入底部队列
+- 队列中 3 个相同卡片自动消除
+- 被遮挡的卡片需要先消除上层才能点击
+- 队列满 7 个游戏结束
+
+### 🍢 烧烤摊
+
+九宫格烧烤炉玩法：
+- 9 个烧烤炉，每个炉有 3 个操作位 + 3 个预览位
+- 拖拽或点击将卡片移动到其他烧烤炉的空位
+- 同一烧烤炉 3 个相同卡片自动消除
+- 消除后预览区卡片自动上移，从卡片池补充
+- 当操作区 3 个位置全空时，预览区整体上移
+- 所有烧烤炉无空位且无法消除时游戏结束
 
 ## 🚀 快速开始
 
@@ -88,15 +107,15 @@ export const NEW_GAME_CONFIG: GameConfig = {
 ### 消除引擎
 
 ```typescript
-// 核心引擎支持配置化消除规则
-const config = {
-    matchCount: 3,  // 羊了个羊：3 消
-    // matchCount: 2,  // 烧烤摊：2 消
-};
-
-// 统一的游戏状态管理
+// 羊了个羊 - 场景消除模式
 const { scene, queue, clickItem, pop, undo, shuffle } = useGameState({
-    config,
+    config: SHEEP_GAME_CONFIG,
+    theme,
+});
+
+// 烧烤摊 - 九宫格烧烤炉模式
+const { grills, cardPool, clickActiveSlot, dragMove, shuffle } = useBBQGameState({
+    config: BBQ_GAME_CONFIG,
     theme,
 });
 ```
