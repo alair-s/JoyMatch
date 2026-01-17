@@ -70,7 +70,7 @@ export class MatchEngine {
      * @param scene 场景道具列表
      * @param itemSize 道具尺寸（默认100）
      */
-    static checkCover<T>(scene: GameItem<T>[], itemSize: number = 100): GameItem<T>[] {
+    static checkCover<T>(scene: GameItem<T>[], itemSize = 100): GameItem<T>[] {
         const result = scene.map((item) => ({ ...item, isCovered: false }));
 
         for (let i = 0; i < result.length; i++) {
@@ -124,8 +124,8 @@ export class MatchEngine {
      */
     static calculateQueuePositions<T>(
         queue: GameItem<T>[],
-        startX: number = 50,
-        spacing: number = 100
+        startX = 50,
+        spacing = 100
     ): Record<string, number> {
         // 按图标分组，保持原有顺序
         const groups: Record<string, GameItem<T>[]> = {};
@@ -177,7 +177,7 @@ export class SceneGenerator {
     private static randomPosition(
         offsetPool: number[],
         range: number[],
-        gridUnit: number = 100
+        gridUnit = 100
     ): Position {
         const offset = offsetPool[Math.floor(offsetPool.length * Math.random())];
         const row = range[0] + Math.floor((range[1] - range[0]) * Math.random());
@@ -198,7 +198,7 @@ export class SceneGenerator {
     static generate<T>(
         level: number,
         icons: GameIcon<T>[],
-        matchCount: number = 3
+        matchCount = 3
     ): GameItem<T>[] {
         // 根据关卡确定图标池
         const iconPool = icons.slice(0, 2 * level);
@@ -251,5 +251,233 @@ export class SceneGenerator {
                 isCovered: false,
             };
         });
+    }
+}
+
+/**
+ * 烧烤摊场景生成器
+ * 固定9宫格位置，每个位置叠多张卡片
+ */
+export class BBQSceneGenerator {
+    // 9宫格固定位置（3x3布局）
+    private static readonly GRID_POSITIONS: Position[] = [
+        { x: 0, y: 0 },   { x: 1, y: 0 },   { x: 2, y: 0 },
+        { x: 0, y: 1 },   { x: 1, y: 1 },   { x: 2, y: 1 },
+        { x: 0, y: 2 },   { x: 1, y: 2 },   { x: 2, y: 2 },
+    ];
+
+    /**
+     * 根据关卡获取网格配置
+     * @param level 关卡
+     * @returns { gridCols: 列数, stackCount: 每格叠几张 }
+     */
+    private static getGridConfig(level: number): { gridCols: number; stackCount: number } {
+        // 随着关卡增加，网格和叠层都会增加
+        if (level <= 3) return { gridCols: 3, stackCount: 2 + level }; // 3x3, 3-5张
+        if (level <= 6) return { gridCols: 3, stackCount: 4 + level }; // 3x3, 8-10张
+        if (level <= 10) return { gridCols: 4, stackCount: 3 + Math.floor(level / 2) }; // 4x4
+        return { gridCols: 4, stackCount: 5 + Math.floor(level / 3) }; // 更多
+    }
+
+    /**
+     * 生成固定网格位置
+     */
+    private static generateGridPositions(
+        gridCols: number,
+        gridUnit: number,
+        offsetX: number,
+        offsetY: number
+    ): Position[] {
+        const positions: Position[] = [];
+        for (let row = 0; row < gridCols; row++) {
+            for (let col = 0; col < gridCols; col++) {
+                positions.push({
+                    x: offsetX + col * gridUnit,
+                    y: offsetY + row * gridUnit,
+                });
+            }
+        }
+        return positions;
+    }
+
+    /**
+     * 生成烧烤摊场景
+     * @param level 关卡
+     * @param icons 图标列表
+     * @param matchCount 消除所需数量（默认2）
+     * @param gridUnit 网格单元大小（默认110）
+     */
+    static generate<T>(
+        level: number,
+        icons: GameIcon<T>[],
+        matchCount = 2,
+        gridUnit = 110
+    ): GameItem<T>[] {
+        const { gridCols, stackCount } = this.getGridConfig(level);
+        const positions = this.generateGridPositions(gridCols, gridUnit, 20, 20);
+        const totalCards = positions.length * stackCount;
+
+        // 确保卡片总数是 matchCount 的倍数（可以全部消除）
+        const adjustedTotal = Math.floor(totalCards / matchCount) * matchCount;
+
+        // 生成成对的图标（确保可消除）
+        const iconList: GameIcon<T>[] = [];
+        const setsNeeded = adjustedTotal / matchCount;
+
+        for (let i = 0; i < setsNeeded; i++) {
+            const icon = icons[i % icons.length];
+            // 每组添加 matchCount 个相同图标
+            for (let j = 0; j < matchCount; j++) {
+                iconList.push(icon);
+            }
+        }
+
+        // 打乱图标顺序
+        const shuffledIcons = shuffle(iconList);
+
+        // 生成场景道具
+        const scene: GameItem<T>[] = [];
+        let iconIndex = 0;
+
+        // 为每个位置生成叠牌
+        for (const pos of positions) {
+            for (let stack = 0; stack < stackCount && iconIndex < shuffledIcons.length; stack++) {
+                scene.push({
+                    id: randomString(6),
+                    icon: shuffledIcons[iconIndex++],
+                    status: ItemStatus.Normal,
+                    position: { ...pos },
+                    isCovered: false, // 覆盖状态由 checkStackCover 计算
+                });
+            }
+        }
+
+        return scene;
+    }
+
+    /**
+     * 检查叠牌覆盖状态（同位置只有最上面的可点击）
+     */
+    static checkStackCover<T>(scene: GameItem<T>[]): GameItem<T>[] {
+        // 按位置分组
+        const positionGroups = new Map<string, GameItem<T>[]>();
+
+        for (const item of scene) {
+            if (item.status !== ItemStatus.Normal) continue;
+
+            const key = `${item.position.x},${item.position.y}`;
+            if (!positionGroups.has(key)) {
+                positionGroups.set(key, []);
+            }
+            positionGroups.get(key)!.push(item);
+        }
+
+        // 每个位置只有最后一个（最上面）不被覆盖
+        const result = scene.map((item) => {
+            if (item.status !== ItemStatus.Normal) {
+                return { ...item, isCovered: false };
+            }
+
+            const key = `${item.position.x},${item.position.y}`;
+            const group = positionGroups.get(key)!;
+            const isTop = group[group.length - 1].id === item.id;
+
+            return { ...item, isCovered: !isTop };
+        });
+
+        return result;
+    }
+
+    /**
+     * 洗牌（重新打乱图标分配，位置不变）
+     */
+    static shuffle<T>(scene: GameItem<T>[]): GameItem<T>[] {
+        // 收集所有正常状态的道具
+        const normalItems = scene.filter((item) => item.status === ItemStatus.Normal);
+        const icons = normalItems.map((item) => item.icon);
+
+        // 打乱图标
+        const shuffledIcons = shuffle(icons);
+
+        // 重新分配图标
+        let iconIndex = 0;
+        return scene.map((item) => {
+            if (item.status !== ItemStatus.Normal) return item;
+            return {
+                ...item,
+                icon: shuffledIcons[iconIndex++],
+            };
+        });
+    }
+}
+
+/**
+ * 烧烤摊消除引擎
+ * 特点：点击选中，两个相同即消除（不需要队列）
+ */
+export class BBQMatchEngine {
+    /**
+     * 检查场景中是否有可配对的卡片
+     * @param scene 场景
+     * @param selectedItem 当前选中的卡片
+     * @param matchCount 消除所需数量
+     * @returns 可消除的卡片列表，如果没有则返回 null
+     */
+    static findMatch<T>(
+        scene: GameItem<T>[],
+        selectedItem: GameItem<T>,
+        matchCount = 2
+    ): GameItem<T>[] | null {
+        // 查找场景中相同图标且可点击的卡片
+        const sameIconItems = scene.filter(
+            (item) =>
+                item.status === ItemStatus.Normal &&
+                !item.isCovered &&
+                item.icon.name === selectedItem.icon.name &&
+                item.id !== selectedItem.id
+        );
+
+        // 加上当前选中的卡片
+        const allMatched = [selectedItem, ...sameIconItems];
+
+        if (allMatched.length >= matchCount) {
+            return allMatched.slice(0, matchCount);
+        }
+
+        return null;
+    }
+
+    /**
+     * 判断游戏是否失败（没有可消除的配对）
+     */
+    static isGameOver<T>(scene: GameItem<T>[], matchCount = 2): boolean {
+        // 获取所有可点击的卡片
+        const clickableItems = scene.filter(
+            (item) => item.status === ItemStatus.Normal && !item.isCovered
+        );
+
+        // 按图标分组
+        const groups = new Map<string, number>();
+        for (const item of clickableItems) {
+            const count = groups.get(item.icon.name) || 0;
+            groups.set(item.icon.name, count + 1);
+        }
+
+        // 检查是否有任何可配对的组合
+        for (const count of groups.values()) {
+            if (count >= matchCount) {
+                return false; // 还有可消除的
+            }
+        }
+
+        // 如果还有卡片但没有可消除的配对，游戏结束
+        return clickableItems.length > 0;
+    }
+
+    /**
+     * 判断游戏是否胜利
+     */
+    static isWin<T>(scene: GameItem<T>[]): boolean {
+        return !scene.some((item) => item.status === ItemStatus.Normal);
     }
 }
