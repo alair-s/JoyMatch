@@ -1,5 +1,4 @@
 import React, { FC } from 'react';
-import style from './Title.module.scss';
 
 export const Title: FC<{ title: string; desc?: string }> = ({
     title,
@@ -7,10 +6,10 @@ export const Title: FC<{ title: string; desc?: string }> = ({
 }) => {
     return (
         <>
-            <h1 className={style.title}>
+            <h1 className="title">
                 {[...title].map((str, i) => (
                     <span
-                        className={style.item}
+                        className="title-item"
                         style={{ animationDelay: i / 10 + 's' }}
                         key={`${i}`}
                     >
@@ -18,7 +17,7 @@ export const Title: FC<{ title: string; desc?: string }> = ({
                     </span>
                 ))}
             </h1>
-            {desc && <h2 className={style.description}>{desc}</h2>}
+            {desc && <h2 className="description">{desc}</h2>}
         </>
     );
 };

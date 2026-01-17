@@ -1,6 +1,5 @@
 import React, { FC, MouseEventHandler, useState } from 'react';
-import style from './WxQrCode.module.scss';
-import classNames from 'classnames';
+
 const WxQrCode: FC<{ title?: string; onClick?: MouseEventHandler }> = ({
     title = '如果您喜欢这个项目的话，点击扫描下方收款码请我喝杯咖啡，感谢~😘',
     onClick,
@@ -19,7 +18,7 @@ const WxQrCode: FC<{ title?: string; onClick?: MouseEventHandler }> = ({
         });
         const clickListener: EventListener = (e) => {
             // @ts-ignore
-            if (e.target?.className !== style.wxQrCodeItemImage) {
+            if (e.target?.className !== 'wx-qrcode-item-image') {
                 setFullScreen({ 0: false, 1: false, 2: false });
             }
             window.removeEventListener('click', clickListener);
@@ -29,21 +28,18 @@ const WxQrCode: FC<{ title?: string; onClick?: MouseEventHandler }> = ({
         });
     };
     return (
-        <div className={style.wxQrCodeContainer} onClick={onClick}>
-            <div className={style.wxQrCodeTitle}>{title}</div>
+        <div className="wx-qrcode-container" onClick={onClick}>
+            <div className="wx-qrcode-title">{title}</div>
             {[1, 5, 8].map((num, idx) => (
                 <div
                     key={num}
-                    className={classNames(
-                        style.wxQrCodeItem,
-                        fullScreen[idx] && style.fullScreen
-                    )}
+                    className={`wx-qrcode-item ${fullScreen[idx] ? 'fullscreen' : ''}`}
                 >
-                    <span className={style.wxQrCodeItemTitle}>￥ {num}</span>
+                    <span className="wx-qrcode-item-title">￥ {num}</span>
                     <img
                         alt={''}
                         src={`/wxQrcode${num}.jpg`}
-                        className={style.wxQrCodeItemImage}
+                        className="wx-qrcode-item-image"
                         onClick={() => onImageClick(idx)}
                     />
                 </div>

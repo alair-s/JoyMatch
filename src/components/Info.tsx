@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
-import style from './Info.module.scss';
 import { FixedAnimateScalePanel } from './FixedAnimateScalePanel';
+
 export const Info: FC = () => {
     return (
         <FixedAnimateScalePanel
-            className={style.info}
-            openClassName={style.open}
+            className="info-panel"
+            openClassName="open"
         >
-            <div className={style.icon}>i</div>
+            <div className="info-icon">i</div>
             <p>
                 bgm素材：
                 <a

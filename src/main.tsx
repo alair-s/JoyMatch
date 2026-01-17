@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './styles/global.scss';
-import './styles/utils.scss';
+import './styles/global.css';
 import Bmob from 'hydrogen-js-sdk';
 import {
     domRelatedOptForTheme,

@@ -1,5 +1,4 @@
 import React, { FC, Suspense, useEffect, useRef, useState } from 'react';
-import style from './Score.module.scss';
 import Bmob from 'hydrogen-js-sdk';
 import {
     PLAYING_THEME_ID_STORAGE_KEY,
@@ -177,7 +176,7 @@ const Score: FC<{
     }, []);
 
     return (
-        <div className={style.modal}>
+        <div className="score-modal">
             <Suspense
                 fallback={
                     <span style={{ position: 'absolute' }}>🎆fireworks🎆</span>
@@ -185,7 +184,7 @@ const Score: FC<{
             >
                 {success && <Fireworks />}
             </Suspense>
-            <div className={style.inner}>
+            <div className="score-modal-inner">
                 {success ? <h1>🎉恭喜通关！</h1> : <h1>😫就差一点！</h1>}
                 <table>
                     <thead>
@@ -209,7 +208,7 @@ const Score: FC<{
                 {!__DIY__ && !username && (
                     <div className={'flex-container flex-center'}>
                         <input
-                            className={style.nameInput}
+                            className="score-name-input"
                             ref={usernameInputRef}
                             maxLength={12}
                             placeholder={'留下大名进行排行榜pk!'}
@@ -232,10 +231,10 @@ const Score: FC<{
                 )}
 
                 {!__DIY__ && (
-                    <div className={style.rankContainer}>
-                        <h1 className={style.title}>TOP 50</h1>
+                    <div className="rank-container">
+                        <h1 className="rank-title">TOP 50</h1>
                         {rankList.length ? (
-                            <div className={style.list}>
+                            <div className="rank-list">
                                 <table>
                                     <thead>
                                         <tr>
@@ -260,7 +259,7 @@ const Score: FC<{
                                                 }}
                                             >
                                                 <td>{idx + 1}</td>
-                                                <td className={style.username}>
+                                                <td className="username">
                                                     {rank.username}
                                                     {rank.userId === userId &&
                                                         '(你)'}
@@ -279,7 +278,7 @@ const Score: FC<{
                                 </table>
                             </div>
                         ) : (
-                            <div className={style.tip}>
+                            <div className="score-tip">
                                 暂无排行，速速霸榜！
                             </div>
                         )}

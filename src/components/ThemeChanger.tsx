@@ -1,6 +1,4 @@
 import React, { FC, useState } from 'react';
-import style from './ThemeChanger.module.scss';
-import classNames from 'classnames';
 import { fishermanTheme } from '../themes/fisherman';
 import { jinlunTheme } from '../themes/jinlun';
 import { ikunTheme } from '../themes/ikun';
@@ -24,10 +22,10 @@ const ThemeChanger: FC<{
     const [open, setOpen] = useState(false);
     return (
         <>
-            <div className={classNames(style.container, open && style.open)}>
+            <div className={`theme-container ${open ? 'open' : ''}`}>
                 {BuiltinThemes.map((theme, idx) => (
                     <div
-                        className={classNames(style.square)}
+                        className="theme-square"
                         key={theme.title}
                         style={{
                             opacity: open ? 1 : 0.3,
@@ -55,7 +53,7 @@ const ThemeChanger: FC<{
                     </div>
                 ))}
                 <div
-                    className={classNames(style.square, style.diy)}
+                    className="theme-square theme-diy"
                     onClick={() => {
                         setOpen(false);
                         onDiyClick();
@@ -69,15 +67,12 @@ const ThemeChanger: FC<{
                     {open ? '点我整活' : 'DIY!'}
                 </div>
 
-                <div
-                    onClick={() => setOpen(!open)}
-                    className={classNames(style.square)}
-                >
+                <div onClick={() => setOpen(!open)} className="theme-square">
                     {open ? '收起' : '更多'}
                 </div>
             </div>
             <div
-                className={style.adv}
+                className="theme-adv"
                 style={{
                     opacity: open ? 1 : 0.3,
                     transform: open

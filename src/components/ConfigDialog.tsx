@@ -1,6 +1,4 @@
 import React, { FC, ReactNode, useEffect, useState } from 'react';
-import style from './ConfigDialog.module.scss';
-import classNames from 'classnames';
 import { Icon, Sound, Theme } from '../themes/interface';
 import { QRCodeCanvas } from 'qrcode.react';
 import Bmob from 'hydrogen-js-sdk';
@@ -29,15 +27,11 @@ const InputContainer: FC<{
 }> = ({ label, children, required }) => {
     return (
         <>
-            <div className={style.divider} />
+            <div className="config-divider" />
             <div
-                className={classNames(
-                    'flex-container flex-center flex-no-wrap',
-                    style.inputContainer,
-                    required && style.required
-                )}
+                className={`flex-container flex-center flex-no-wrap config-input-container ${required ? 'required' : ''}`}
             >
-                <span className={style.label}>{label}</span>
+                <span className="config-label">{label}</span>
                 <div className={'flex-container flex-column flex-grow'}>
                     {children}
                 </div>
@@ -398,8 +392,8 @@ const ConfigDialog: FC<{
     }, [pureClickTime]);
 
     return (
-        <div className={classNames(style.dialog)}>
-            <div className={style.closeBtn} onClick={closeMethod}>
+        <div className="config-dialog">
+            <div className="config-close-btn" onClick={closeMethod}>
                 <CloseIcon fill={'#fff'} />
             </div>
             <h2>自定义主题</h2>
@@ -430,7 +424,7 @@ const ConfigDialog: FC<{
                 />
             </InputContainer>
             <InputContainer label={'BGM'}>
-                <div className={style.tip}>
+                <div className="config-tip">
                     接口上传体积有限制，上传文件请全力压缩到80k以下，推荐使用外链
                 </div>
                 <input
@@ -443,7 +437,7 @@ const ConfigDialog: FC<{
                         })
                     }
                 />
-                {bgmError && <div className={style.errorTip}>{bgmError}</div>}
+                {bgmError && <div className="config-error-tip">{bgmError}</div>}
                 <input
                     placeholder={'或者输入https外链'}
                     value={customTheme.bgm || ''}
@@ -452,7 +446,7 @@ const ConfigDialog: FC<{
                 {customTheme.bgm && <audio src={customTheme.bgm} controls />}
             </InputContainer>
             <InputContainer label={'背景图'}>
-                <div className={style.tip}>
+                <div className="config-tip">
                     接口上传体积有限制，上传的图片将会被严重压缩，推荐使用外链
                 </div>
                 <input
@@ -466,7 +460,7 @@ const ConfigDialog: FC<{
                     }
                 />
                 {backgroundError && (
-                    <div className={style.errorTip}>{backgroundError}</div>
+                    <div className="config-error-tip">{backgroundError}</div>
                 )}
                 <div className={'flex-container flex-center'}>
                     <input
@@ -480,7 +474,7 @@ const ConfigDialog: FC<{
                         <img
                             alt="加载失败"
                             src={customTheme.background}
-                            className={style.imgPreview}
+                            className="config-img-preview"
                         />
                     )}
                 </div>
@@ -522,7 +516,7 @@ const ConfigDialog: FC<{
                         />
                     </div>
                 </div>
-                <div className={style.tip}>
+                <div className="config-tip">
                     使用图片或者纯色作为背景，图片可开启毛玻璃效果。如果你使用了深色的图片和颜色，请开启深色模式，此时标题等文字将变为亮色
                 </div>
             </InputContainer>
@@ -540,9 +534,9 @@ const ConfigDialog: FC<{
                 <div className={'flex-container flex-left-center'}>
                     {customTheme.sounds.map((sound, idx) => {
                         return (
-                            <div key={sound.name} className={style.soundItem}>
+                            <div key={sound.name} className="config-sound-item">
                                 <audio src={sound.src} controls />
-                                <div className={style.inner}>
+                                <div className="config-sound-inner">
                                     <span>{sound.name}</span>
                                     <CloseIcon
                                         fill={'#fff'}
@@ -558,7 +552,7 @@ const ConfigDialog: FC<{
                     value={newSound.name}
                     onChange={(e) => onNewSoundChange('name', e.target.value)}
                 />
-                <div className={style.tip}>
+                <div className="config-tip">
                     接口上传体积有限制，上传文件请全力压缩到10k以下，推荐使用外链
                 </div>
                 <input
@@ -577,23 +571,23 @@ const ConfigDialog: FC<{
                     onChange={(e) => onNewSoundChange('src', e.target.value)}
                 />
                 {soundError && (
-                    <div className={style.errorTip}>{soundError}</div>
+                    <div className="config-error-tip">{soundError}</div>
                 )}
                 <button onClick={onAddNewSoundClick}>添加音效</button>
             </InputContainer>
             <InputContainer label={'图标素材'} required>
-                <div className={style.tip}>
+                <div className="config-tip">
                     接口上传体积有限制，上传的图片将会被严重压缩，推荐使用外链
                 </div>
             </InputContainer>
             {customTheme.icons.map((icon, idx) => (
-                <div key={icon.name} className={style.iconInputGroup}>
+                <div key={icon.name} className="config-icon-input-group">
                     <img
                         alt=""
-                        className={style.iconPreview}
+                        className="config-icon-preview"
                         src={icon.content}
                     />
-                    <div className={style.iconInput}>
+                    <div className="config-icon-input">
                         <input
                             type={'file'}
                             accept={'.jpg,.png,.gif'}
@@ -629,7 +623,7 @@ const ConfigDialog: FC<{
                                 }
                             />
                             {iconErrors[idx] && (
-                                <div className={style.errorTip}>
+                                <div className="config-error-tip">
                                     {iconErrors[idx]}
                                 </div>
                             )}
@@ -683,10 +677,7 @@ const ConfigDialog: FC<{
                         id="qrCode"
                         value={genLink}
                         size={300}
-                        className={classNames(
-                            style.qrCode,
-                            uploading && style.uploading
-                        )}
+                        className={`config-qrcode ${uploading ? 'uploading' : ''}`}
                     />
                     <button
                         onClick={() =>
@@ -707,7 +698,7 @@ const ConfigDialog: FC<{
                     </button>
                 </div>
             )}
-            <div className={style.tip}>
+            <div className="config-tip">
                 接口上传内容总体积有限制，上传文件失败请尝试进一步压缩文件，推荐使用外链（自行搜索【免费图床】【免费mp3外链】【对象存储服务】等关键词）。
                 本地整活，勾选右侧关闭文件大小校验👉
                 <input
@@ -719,9 +710,9 @@ const ConfigDialog: FC<{
                 />
                 (谨慎操作，单文件不超过1M为宜，文件过大可能导致崩溃，介时请刷新浏览器)
             </div>
-            {configError && <div className={style.errorTip}>{configError}</div>}
+            {configError && <div className="config-error-tip">{configError}</div>}
             {customTheme.pure && (
-                <div className={style.tip}>
+                <div className="config-tip">
                     🎉🎉🎉恭喜发现彩蛋，生成的主题将开启纯净模式～
                 </div>
             )}

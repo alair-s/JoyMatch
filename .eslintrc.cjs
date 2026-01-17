@@ -15,15 +15,13 @@ module.exports = {
         es6: true,
         node: true,
     },
-    plugins: ['eslint-plugin-prettier', '@typescript-eslint'],
+    plugins: ['@typescript-eslint'],
     extends: [
         'eslint:recommended',
         'plugin:react/recommended',
         'plugin:@typescript-eslint/recommended',
-        'plugin:prettier/recommended',
     ],
     rules: {
-        'prettier/prettier': 'error',
         '@typescript-eslint/no-explicit-any': 0,
         '@typescript-eslint/ban-ts-comment': 0,
         '@typescript-eslint/no-non-null-assertion': 0,

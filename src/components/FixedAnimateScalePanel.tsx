@@ -1,6 +1,4 @@
 import React, { FC, ReactNode, useState } from 'react';
-import style from './FixedAnimateScalePanel.module.scss';
-import classNames from 'classnames';
 import { CloseIcon } from './CloseIcon';
 
 export const FixedAnimateScalePanel: FC<{
@@ -17,18 +15,21 @@ export const FixedAnimateScalePanel: FC<{
     initOpen = false,
 }) => {
     const [open, setOpen] = useState<boolean>(initOpen);
+    
+    const classes = [
+        'fixed-panel',
+        open ? 'open' : '',
+        className || '',
+        open ? openClassName || '' : closeClassName || ''
+    ].filter(Boolean).join(' ');
+    
     return (
         <div
             onClick={() => !open && setOpen(true)}
-            className={classNames(
-                style.panel,
-                open && style.open,
-                className,
-                open ? openClassName : closeClassName
-            )}
+            className={classes}
         >
             {children}
-            <div className={style.closeBtn} onClick={() => setOpen(false)}>
+            <div className="close-btn" onClick={() => setOpen(false)}>
                 <CloseIcon fill={'#888'} />
             </div>
         </div>

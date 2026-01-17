@@ -6,7 +6,6 @@ import React, {
     useState,
     Suspense,
 } from 'react';
-import './Game.scss';
 import {
     LAST_LEVEL_STORAGE_KEY,
     LAST_SCORE_STORAGE_KEY,

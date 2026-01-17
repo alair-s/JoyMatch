@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState, Suspense } from 'react';
-import './App.scss';
 import {
     domRelatedOptForTheme,
     LAST_LEVEL_STORAGE_KEY,
