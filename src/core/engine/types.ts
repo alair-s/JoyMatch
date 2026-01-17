@@ -53,6 +53,9 @@ export interface GameItem<SoundName = string> {
     isCovered: boolean;
 }
 
+/** 游戏模式 */
+export type GameMode = 'sheep' | 'bbq';
+
 /** 游戏配置 */
 export interface GameConfig {
     /** 游戏唯一标识 */
@@ -63,9 +66,11 @@ export interface GameConfig {
     description: string;
     /** 游戏图标（emoji 或 URL） */
     icon: string;
+    /** 游戏模式：sheep=羊了个羊（随机位置+队列），bbq=烧烤摊（固定位置+直接配对） */
+    mode: GameMode;
     /** 几个相同消除（羊了个羊=3，烧烤摊=2） */
     matchCount: number;
-    /** 队列最大容量 */
+    /** 队列最大容量（仅 sheep 模式使用） */
     queueSize: number;
     /** 虚拟网格大小 */
     gridSize: number;
