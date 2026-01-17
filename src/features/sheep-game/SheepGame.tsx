@@ -8,7 +8,7 @@ import { useNavigate, useLoaderData } from 'react-router-dom';
 import { useGameState } from '../../core/hooks/useGameState';
 import { SHEEP_GAME_CONFIG } from '../../shared/config/games';
 import { getDefaultSheepTheme } from './themes';
-import { GameBoard } from './components/GameBoard';
+import { GameBoard, GameQueue } from './components/GameBoard';
 import { GameControls } from './components/GameControls';
 import { GameInfo } from './components/GameInfo';
 import { GameResult } from './components/GameResult';
@@ -85,8 +85,8 @@ function SheepGame() {
                 />
             </div>
 
-            {/* 队列区域 */}
-            <div className="h-16 bg-amber-900/30 mx-4 mb-4 rounded-xl" />
+            {/* 队列区域 - 显示已选中的牌 */}
+            <GameQueue scene={scene} queuePositions={queuePositions} />
 
             {/* 控制按钮 */}
             <div className="pb-8">
